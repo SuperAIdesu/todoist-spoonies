@@ -14,7 +14,7 @@ from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
 )
-from tg_bot_handlers import start
+from tg_bot_handlers import health
 from tinydb import TinyDB
 from todoist_auth import access_token_loop, produce_state_str, token_exchange
 from todoist_notifs import process_event
@@ -119,7 +119,7 @@ async def main():
     )
 
     # start the bot
-    bot.add_handler(CommandHandler("start", start))
+    bot.add_handler(CommandHandler("health", health))
     await bot.bot.set_webhook(
         url=f"{os.environ['URL']}/telegram/webhook", allowed_updates=Update.ALL_TYPES
     )
