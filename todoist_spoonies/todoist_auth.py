@@ -30,10 +30,31 @@ def get_recent_auth_record() -> Optional[dict]:
     return [doc for doc in db_all if doc["timestamp"] == most_recent_timestamp][0]
 
 
+def is_token_expired() -> bool:
+    """
+    Check if the current access token has expired.
+    Returns True if expired or if required fields are missing.
+    """
+    record = get_recent_auth_record()
+    if record is None or "expires_in" not in record:
+        return True
+    expiration_time = record["timestamp"] + record["expires_in"]
+    return time.time() >= expiration_time
+
+
 async def access_token_loop():
     """
     A async loop to refresh Todoist access token periodically.
     """
+    if is_token_expired():
+        logger.info("Token already expired, refreshing immediately...")
+        try:
+            await token_refresh()
+            logger.info("Immediate token refresh success!")
+        except Exception as e:
+            logger.error("Immediate token refresh failed!")
+            logger.error(e)
+
     while True:
         await asyncio.sleep(3200)
         logger.info("Refreshing access token...")
