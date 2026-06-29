@@ -51,7 +51,7 @@ class CompletedTaskRecord(BaseModel):
         async with ClientSession(headers=get_auth_headers()) as session:
             async with session.post(
                 url="https://api.todoist.com/api/v1/tasks",
-                data={
+                json={
                     "content": self.content,
                     "description": self.description,
                     "project_id": self.project_id,
