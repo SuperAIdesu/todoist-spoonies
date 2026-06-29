@@ -17,6 +17,7 @@ from telegram.ext import (
 from tg_bot_handlers import start
 from tinydb import TinyDB
 from todoist_auth import access_token_loop, produce_state_str, token_exchange
+from todoist_notifs import process_event
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -78,8 +79,11 @@ async def handle_todoist_webhook(request: web.Request):
     if not hmac.compare_digest(provided_hmac, expected_hmac):
         return web.Response(status=401, text="Invalid HMAC signature")
 
-    # TODO: logic for processing Todoist webhook
-    logger.info(await request.json())
+    try:
+        await process_event(await request.json())
+    except Exception as e:
+        logger.error("Notification processing failed!")
+        logger.error(e)
 
     return web.Response(status=200, text="Notification processed")
 
