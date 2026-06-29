@@ -65,6 +65,7 @@ class CompletedTaskRecord(BaseModel):
                     logger.info(f"Task ID {self.id} readded")
                     return
                 else:
+                    logger.error(resp)
                     raise ValueError("Todoist API Response invalid!")
 
 
