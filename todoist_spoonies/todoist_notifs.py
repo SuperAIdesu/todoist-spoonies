@@ -62,6 +62,7 @@ class CompletedTaskRecord(BaseModel):
                 },
             ) as resp:
                 if resp.status == 200:
+                    logger.info(f"Task ID {self.id} readded")
                     return
                 else:
                     raise ValueError("Todoist API Response invalid!")
@@ -103,10 +104,14 @@ async def process_completion(event_data: dict):
         parent_id=event_data["parent_id"],
         labels=event_data["labels"],
         added_at=event_data["added_at"],
-        completed_at=event_data["completed_at"],
+        # For recurring tasks, completed_at will be None. Use updated_at instead
+        completed_at=event_data["completed_at"]
+        if event_data["completed_at"] is not None
+        else event_data["updated_at"],
         spoons=match_spoon_from_labels(event_data["labels"]),
     )
     tasks_table.insert(task_record.model_dump())
+    logger.info(f"Task ID {task_record.id} inserted to DB")
 
     if task_record.should_readd():
         # Delay 120 secs to avoid confusing user in Todoist client UI
@@ -116,10 +121,16 @@ async def process_completion(event_data: dict):
 
 async def process_uncompletion(event_data: dict):
     """
-    Remove the completed task if in DB.
+    Remove the latest completed task record (by completed_at) if in DB.
     """
     task_id = event_data["id"]
-    tasks_table.remove(Query().id == task_id)
+    records = tasks_table.search(Query().id == task_id)
+    if not records:
+        logger.info(f"Task ID {task_id} not found in DB")
+        return
+    latest = max(records, key=lambda r: r["completed_at"])
+    tasks_table.remove(doc_ids=[latest["_id"]])
+    logger.info(f"Task ID {task_id} removed from DB")
 
 
 async def get_name_from_id(type: str, id: str) -> str:
