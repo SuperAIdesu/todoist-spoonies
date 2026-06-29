@@ -110,7 +110,7 @@ async def process_completion(event_data: dict):
         else event_data["updated_at"],
         spoons=match_spoon_from_labels(event_data["labels"]),
     )
-    tasks_table.insert(task_record.model_dump())
+    tasks_table.insert(task_record.model_dump(mode="json"))
     logger.info(f"Task ID {task_record.id} inserted to DB")
 
     if task_record.should_readd():
