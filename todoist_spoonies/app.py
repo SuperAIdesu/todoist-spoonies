@@ -7,8 +7,6 @@ import logging
 import os
 import signal
 import time
-from contextlib import asynccontextmanager
-
 import aiohttp
 import ids
 from aiohttp import web
@@ -38,15 +36,6 @@ db = TinyDB("data/db.json")
 auth_table = db.table("auth")
 
 client_session: aiohttp.ClientSession | None = None
-
-
-@asynccontextmanager
-async def lifespan(app: web.Application):
-    global client_session
-    client_session = aiohttp.ClientSession()
-    yield
-    await client_session.close()
-    client_session = None
 
 
 def oauth_messages():
@@ -187,6 +176,10 @@ async def main():
     # refresh Todoist token in background
     asyncio.create_task(access_token_loop())
 
+    # HTTP client session
+    global client_session
+    client_session = aiohttp.ClientSession()
+
     # web server setup
     app = create_app()
     runner = web.AppRunner(app)
@@ -203,6 +196,7 @@ async def main():
 
     await stop_event.wait()
 
+    await client_session.close()
     await runner.cleanup()
     await bot.stop()
     await bot.shutdown()
