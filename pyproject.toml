@@ -5,10 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "aiohttp>=3.14.1",
     "python-dotenv>=1.2.2",
     "python-telegram-bot>=22.8",
-    "requests>=2.34.2",
-    "robyn>=0.88.0",
     "tinydb>=4.8.2",
     "todoist-api-python>=4.0.0",
 ]
