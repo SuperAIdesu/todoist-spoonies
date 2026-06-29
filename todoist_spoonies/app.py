@@ -7,6 +7,7 @@ import logging
 import os
 import signal
 import time
+
 import aiohttp
 import ids
 from aiohttp import web
@@ -15,6 +16,7 @@ from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
+    ContextTypes,
 )
 from tinydb import Query, TinyDB
 
@@ -142,7 +144,7 @@ async def telegram_webhook(request: web.Request):
     return web.Response(status=200, text="Notification processed")
 
 
-async def start(update: Update) -> None:
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_html(text="hello")
 
 
