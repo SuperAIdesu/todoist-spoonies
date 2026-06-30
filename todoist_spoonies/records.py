@@ -86,6 +86,36 @@ def get_records_by_time(start: datetime, end: datetime) -> list[CompletedTaskRec
     return [CompletedTaskRecord(**r) for r in records]
 
 
+def escape_for_telegram_md(text: str) -> str:
+    """
+    Escape the special characters for Telegram Markdown formatting
+    """
+    chars = [
+        "_",
+        "*",
+        "[",
+        "]",
+        "(",
+        ")",
+        "~",
+        "`",
+        ">",
+        "#",
+        "+",
+        "-",
+        "=",
+        "|",
+        "{",
+        "}",
+        ".",
+        "!",
+    ]
+    for char in chars:
+        if char in text:
+            text = text.replace(char, "\\" + char)
+    return text
+
+
 def build_today_message(records: list[CompletedTaskRecord]) -> str:
     """Build a text summary of today's completed tasks."""
     total_spoons = sum(r.spoons or 0 for r in records)
@@ -95,13 +125,18 @@ def build_today_message(records: list[CompletedTaskRecord]) -> str:
     ]
     for r in records:
         spoon_str = f" \({r.spoons}x🥄\)" if r.spoons else ""
-        lines.append(
-            f"• {r.content}{spoon_str} in {r.project_name}\-\>{r.section_name}"
-        )
+        match r.project_name, r.section_name:
+            case str(), str():
+                proj_sec_str = f" in `{escape_for_telegram_md(r.project_name)}\-\>{escape_for_telegram_md(r.section_name)}`"
+            case str(), None:
+                proj_sec_str = f" in `{escape_for_telegram_md(r.project_name)}`"
+            case _, _:
+                proj_sec_str = ""
+        lines.append(f"• {escape_for_telegram_md(r.content)}{spoon_str}{proj_sec_str}")
     lines.append(
-        "*If you forgot to tag the spoon label on the task, feel free to complete a placeholder task in your template project so that it could be tracked.*"
+        "*If you forgot to tag the spoon label on the task, feel free to complete a placeholder task in your template project so that it could be tracked\.*"
     )
-    lines.append("Enjoy the rest of your day!")
+    lines.append("Enjoy the rest of your day\!")
     return "\n".join(lines)
 
 
