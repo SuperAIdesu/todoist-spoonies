@@ -40,5 +40,5 @@ async def daily_summary_loop(bot: Bot):
         end = now.replace(hour=23, minute=59, second=59, microsecond=999999)
         records = get_records_by_time(start, end)
         message = build_today_message(records)
-        await bot.send_message(chat_id=user_id, text=message)
+        await bot.send_message(chat_id=user_id, text=message, parse_mode="MarkdownV2")
         logger.info("Daily summary sent")

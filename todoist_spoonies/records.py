@@ -91,7 +91,7 @@ def build_today_message(records: list[CompletedTaskRecord]) -> str:
     total_spoons = sum(r.spoons or 0 for r in records)
     lines = [
         "Hi there,",
-        f"Today you have used {total_spoons} spoons to complete {len(records)} tasks:",
+        f"__Today you have used {total_spoons} spoons to complete {len(records)} tasks:__",
     ]
     for r in records:
         spoon_str = f" ({r.spoons}x🥄)" if r.spoons else ""

@@ -50,7 +50,9 @@ async def today(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     end = now.replace(hour=23, minute=59, second=59, microsecond=999999)
     records = get_records_by_time(start, end)
-    await update.effective_message.reply_text(build_today_message(records))
+    await update.effective_message.reply_text(
+        build_today_message(records), parse_mode="MarkdownV2"
+    )
 
 
 async def daily_summary(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
