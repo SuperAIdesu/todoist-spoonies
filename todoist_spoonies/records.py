@@ -94,7 +94,7 @@ def build_today_message(records: list[CompletedTaskRecord]) -> str:
         f"__Today you have used {total_spoons} spoons to complete {len(records)} tasks:__",
     ]
     for r in records:
-        spoon_str = f" ({r.spoons}x🥄)" if r.spoons else ""
+        spoon_str = f" \({r.spoons}x🥄\)" if r.spoons else ""
         lines.append(
             f"• {r.content}{spoon_str} in {r.project_name}\-\>{r.section_name}"
         )
