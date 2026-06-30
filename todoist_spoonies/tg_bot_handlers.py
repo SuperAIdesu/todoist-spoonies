@@ -146,7 +146,7 @@ async def recent_days(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         total_spoons = sum(r.spoons or 0 for r in records)
         date_str = day.strftime("%b %d")
         dow_str = day.strftime("%a")
-        lines.append(f"• `{date_str} \({dow_str}\)`: {total_spoons} 🥄")
+        lines.append(f"• *{date_str} \({dow_str}\)*: `{total_spoons}` 🥄")
 
     greetings_line = (
         f"Hi {update.effective_user.first_name} {update.effective_user.last_name},\n"
