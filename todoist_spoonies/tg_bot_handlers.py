@@ -70,11 +70,17 @@ async def daily_summary(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     config = DailySummaryConfig.load()
 
     if not args:
-        status = "enabled" if config.enabled else "disabled"
-        await update.effective_message.reply_text(
-            f"Daily summary is {status} at {config.scheduled_time.strftime('%H:%M')}."
-        )
-        return
+        match config.enabled:
+            case True:
+                await update.effective_message.reply_text(
+                    f"Daily summary is enabled at {config.scheduled_time.strftime('%H:%M')}."
+                )
+                return
+            case _:
+                await update.effective_message.reply_text(
+                    "Daily summary is not enabled."
+                )
+                return
 
     command = args[0].lower()
 
