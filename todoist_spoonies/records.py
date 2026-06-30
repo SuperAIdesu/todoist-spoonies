@@ -83,7 +83,8 @@ def get_records_by_time(start: datetime, end: datetime) -> list[CompletedTaskRec
     q = Query()
     records = tasks_table.search(q.completed_at >= start.isoformat())
     records = [r for r in records if r["completed_at"] <= end.isoformat()]
-    return [CompletedTaskRecord(**r) for r in records]
+    built_records = [CompletedTaskRecord(**r) for r in records]
+    return sorted(built_records, key=lambda x: x.completed_at)
 
 
 def escape_for_telegram_md(text: str) -> str:
