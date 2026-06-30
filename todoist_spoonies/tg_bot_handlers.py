@@ -17,7 +17,7 @@ async def filter_user_callback(update: Update, context: ContextTypes.DEFAULT_TYP
         raise ApplicationHandlerStop
     assert update.effective_user
     assert update.effective_message
-    if update.effective_user.id == user_id:
+    if str(update.effective_user.id) == user_id:
         pass
     else:
         await update.effective_message.reply_text(
