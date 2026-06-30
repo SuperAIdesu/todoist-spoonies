@@ -95,7 +95,9 @@ def build_today_message(records: list[CompletedTaskRecord]) -> str:
     ]
     for r in records:
         spoon_str = f" ({r.spoons}x🥄)" if r.spoons else ""
-        lines.append(f"- {r.content}{spoon_str} in {r.project_name}->{r.section_name}")
+        lines.append(
+            f"• {r.content}{spoon_str} in {r.project_name}\-\>{r.section_name}"
+        )
     lines.append(
         "*If you forgot to tag the spoon label on the task, feel free to complete a placeholder task in your template project so that it could be tracked.*"
     )
