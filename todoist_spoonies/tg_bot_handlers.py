@@ -37,3 +37,11 @@ async def health(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await context.bot.send_message(
         chat_id=update.effective_chat.id, text="This bot is running."
     )
+
+
+async def today(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Return a summary of today's completed tasks, and total spoon count.
+    """
+    # user bot.reply_markdown_v2() to send message
+    pass
