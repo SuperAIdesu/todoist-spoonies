@@ -124,7 +124,7 @@ def build_today_message(records: list[CompletedTaskRecord]) -> str:
         f"__Today you have used {total_spoons} spoons to complete {len(records)} tasks:__",
     ]
     for r in records:
-        spoon_str = f" \({r.spoons}x🥄\)" if r.spoons else ""
+        spoon_str = f" \({r.spoons}🥄\)" if r.spoons else ""
         match r.project_name, r.section_name:
             case str(), str():
                 proj_sec_str = f" in `{escape_for_telegram_md(r.project_name)}\-\>{escape_for_telegram_md(r.section_name)}`"
@@ -132,9 +132,11 @@ def build_today_message(records: list[CompletedTaskRecord]) -> str:
                 proj_sec_str = f" in `{escape_for_telegram_md(r.project_name)}`"
             case _, _:
                 proj_sec_str = ""
-        lines.append(f"• {escape_for_telegram_md(r.content)}{spoon_str}{proj_sec_str}")
+        lines.append(
+            f"• `{escape_for_telegram_md(r.content)}`{spoon_str}{proj_sec_str}"
+        )
     lines.append(
-        "*If you forgot to tag the spoon label on the task, feel free to complete a placeholder task in your template project so that it could be tracked\.*"
+        "_If you forgot to tag the spoon label on the task, feel free to complete a placeholder task in your template project so that it could be tracked\._"
     )
     lines.append("Enjoy the rest of your day\!")
     return "\n".join(lines)
