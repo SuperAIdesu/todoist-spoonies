@@ -120,7 +120,6 @@ def build_today_message(records: list[CompletedTaskRecord]) -> str:
     """Build a text summary of today's completed tasks."""
     total_spoons = sum(r.spoons or 0 for r in records)
     lines = [
-        "Hi there,\n",
         f"__Today you have used {total_spoons} spoons to complete {len(records)} tasks:__\n",
     ]
     for r in records:
@@ -136,7 +135,7 @@ def build_today_message(records: list[CompletedTaskRecord]) -> str:
             f"• `{escape_for_telegram_md(r.content)}`{spoon_str}{proj_sec_str}"
         )
     lines.append(
-        "\n_If you forgot to tag the spoon label on the task, feel free to complete a placeholder task in your template project so that it could be tracked\._\n"
+        "\n_If you forgot to tag the spoon label on the task, feel free to complete a placeholder task in your template project so that your spent spoons could be tracked\._\n"
     )
     lines.append("Enjoy the rest of your day\!")
     return "\n".join(lines)

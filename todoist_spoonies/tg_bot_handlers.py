@@ -46,12 +46,17 @@ async def today(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     Send a summary of today's completed tasks, and total spoon count.
     """
     assert update.effective_message
+    assert update.effective_user
     now = datetime.now()
     start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     end = now.replace(hour=23, minute=59, second=59, microsecond=999999)
     records = get_records_by_time(start, end)
+    summary_msg = build_today_message(records)
+    greetings_line = (
+        f"Hi {update.effective_user.first_name} {update.effective_user.last_name},\n"
+    )
     await update.effective_message.reply_text(
-        build_today_message(records), parse_mode="MarkdownV2"
+        greetings_line + summary_msg, parse_mode="MarkdownV2"
     )
 
 
