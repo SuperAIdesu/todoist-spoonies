@@ -17,11 +17,14 @@ async def filter_user_callback(update: Update, context: ContextTypes.DEFAULT_TYP
         raise ApplicationHandlerStop
     assert update.effective_user
     assert update.effective_message
-    if update.effective_user.id == user_id:
+    if str(update.effective_user.id) == user_id:
         pass
     else:
         await update.effective_message.reply_text(
             "You are not authorized to use this bot!"
+        )
+        logger.info(
+            f"Unauthorized message from id {update.effective_user.id}. Allowed user: {user_id}"
         )
         raise ApplicationHandlerStop
 
