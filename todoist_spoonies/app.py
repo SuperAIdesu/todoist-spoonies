@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, TypeHandler
 from scheduler import daily_summary_loop
-from tg_bot_handlers import daily_summary, filter_user_callback, health, today
+from tg_bot_handlers import daily_summary, filter_user_callback, health, recent_days, today
 from tinydb import TinyDB
 from todoist_auth import access_token_loop, produce_state_str, token_exchange
 from todoist_notifs import process_event
@@ -121,6 +121,7 @@ async def main():
     bot.add_handler(CommandHandler("health", health))
     bot.add_handler(CommandHandler("today", callback=today))
     bot.add_handler(CommandHandler("daily_summary", callback=daily_summary))
+    bot.add_handler(CommandHandler("recent_days", callback=recent_days))
     await bot.bot.set_webhook(
         url=f"{os.environ['URL']}/telegram/webhook", allowed_updates=Update.ALL_TYPES
     )
