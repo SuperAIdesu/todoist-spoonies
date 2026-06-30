@@ -9,10 +9,25 @@ import signal
 
 from aiohttp import web
 from dotenv import load_dotenv
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, TypeHandler
 from scheduler import daily_summary_loop
-from tg_bot_handlers import daily_summary, filter_user_callback, health, recent_days, today
+from telegram import Update
+from telegram.ext import (
+    Application,
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
+    TypeHandler,
+    filters,
+)
+from tg_bot_handlers import (
+    daily_summary,
+    filter_user_callback,
+    health,
+    help_handler,
+    recent_days,
+    today,
+    unknown_handler,
+)
 from tinydb import TinyDB
 from todoist_auth import access_token_loop, produce_state_str, token_exchange
 from todoist_notifs import process_event
@@ -104,6 +119,20 @@ def create_app():
     return app
 
 
+def tg_bot_add_handlers(bot: Application):
+    """
+    Add all the Telegram bot handlers
+    """
+    bot.add_handler(TypeHandler(Update, filter_user_callback), -1)
+    bot.add_handler(CommandHandler("health", health))
+    bot.add_handler(CommandHandler("today", callback=today))
+    bot.add_handler(CommandHandler("daily_summary", callback=daily_summary))
+    bot.add_handler(CommandHandler("recent_days", callback=recent_days))
+    bot.add_handler(CommandHandler("help", callback=help_handler))
+    bot.add_handler(MessageHandler(filters.COMMAND, unknown_handler))
+    bot.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, unknown_handler))
+
+
 async def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--listen", default="127.0.0.1")
@@ -117,11 +146,7 @@ async def main():
     )
 
     # start the bot
-    bot.add_handler(TypeHandler(Update, filter_user_callback), -1)
-    bot.add_handler(CommandHandler("health", health))
-    bot.add_handler(CommandHandler("today", callback=today))
-    bot.add_handler(CommandHandler("daily_summary", callback=daily_summary))
-    bot.add_handler(CommandHandler("recent_days", callback=recent_days))
+    tg_bot_add_handlers(bot)
     await bot.bot.set_webhook(
         url=f"{os.environ['URL']}/telegram/webhook", allowed_updates=Update.ALL_TYPES
     )

@@ -153,3 +153,31 @@ async def recent_days(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     )
     msg = greetings_line + "\n".join(lines)
     await update.effective_message.reply_text(msg, parse_mode="MarkdownV2")
+
+
+async def help_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Sends a help message.
+    """
+    assert update.effective_message
+    help_text = (
+        "Available commands:\n\n"
+        "/today \nShow today's completed tasks and total spoon count\n"
+        "/recent_days [N] \nShow spoon count for the past N days (default: 7)\n"
+        "/daily_summary \nCheck daily summary status\n"
+        "/daily_summary enable HH:MM \nEnable scheduled daily summary\n"
+        "/daily_summary disable \nDisable scheduled daily summary\n"
+        "/help \nShow this help message\n"
+        "/health \nCheck whether the bot is working"
+    )
+    await update.effective_message.reply_text(help_text)
+
+
+async def unknown_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Catch-all for other, unknown user messages.
+    """
+    assert update.effective_message
+    await update.effective_message.reply_text(
+        "Unknown command. Use /help for available commands."
+    )
