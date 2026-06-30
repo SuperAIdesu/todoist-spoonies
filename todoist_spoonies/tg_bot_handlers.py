@@ -1,6 +1,6 @@
 import logging
 import os
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 from records import DailySummaryConfig, build_today_message, get_records_by_time
 from telegram import Update
@@ -114,3 +114,42 @@ async def daily_summary(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             await update.effective_message.reply_text(
                 "Usage:\n/daily_summary enable HH:MM\n/daily_summary disable\n/daily_summary"
             )
+
+
+async def recent_days(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Send spoon count for the past N calendar days (today included).
+    Usage: /recent_days [N]  (defaults to 7)
+    """
+    assert update.effective_message
+    assert update.effective_user
+    args = context.args
+    num_days = 7
+    if args:
+        try:
+            num_days = int(args[0])
+            if num_days < 1:
+                raise ValueError
+        except ValueError:
+            await update.effective_message.reply_text(
+                "Usage: /recent_days N  (N must be a positive integer)"
+            )
+            return
+
+    now = datetime.now()
+    lines = [f"Here are your daily spoons for the past {num_days} days:\n"]
+    for i in range(num_days - 1, -1, -1):
+        day = now - timedelta(days=i)
+        day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = day.replace(hour=23, minute=59, second=59, microsecond=999999)
+        records = get_records_by_time(day_start, day_end)
+        total_spoons = sum(r.spoons or 0 for r in records)
+        date_str = day.strftime("%b %d")
+        dow_str = day.strftime("%a")
+        lines.append(f"• {date_str} ({dow_str}): {total_spoons} 🥄")
+
+    greetings_line = (
+        f"Hi {update.effective_user.first_name} {update.effective_user.last_name},\n"
+    )
+    msg = greetings_line + "\n".join(lines)
+    await update.effective_message.reply_text(msg)
