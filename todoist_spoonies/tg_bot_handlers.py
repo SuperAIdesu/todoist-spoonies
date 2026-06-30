@@ -137,7 +137,7 @@ async def recent_days(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             return
 
     now = datetime.now()
-    lines = [f"Here are your daily spoons for the past {num_days} days:\n"]
+    lines = [f"__Here are your daily spoons for the past {num_days} days:__\n"]
     for i in range(num_days - 1, -1, -1):
         day = now - timedelta(days=i)
         day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -146,10 +146,10 @@ async def recent_days(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         total_spoons = sum(r.spoons or 0 for r in records)
         date_str = day.strftime("%b %d")
         dow_str = day.strftime("%a")
-        lines.append(f"• {date_str} ({dow_str}): {total_spoons} 🥄")
+        lines.append(f"• `{date_str} \({dow_str}\)`: {total_spoons} 🥄")
 
     greetings_line = (
         f"Hi {update.effective_user.first_name} {update.effective_user.last_name},\n"
     )
     msg = greetings_line + "\n".join(lines)
-    await update.effective_message.reply_text(msg)
+    await update.effective_message.reply_text(msg, parse_mode="MarkdownV2")
