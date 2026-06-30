@@ -6,15 +6,13 @@ import hmac
 import logging
 import os
 import signal
+from typing import Type
 
 from aiohttp import web
 from dotenv import load_dotenv
 from telegram import Update
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-)
-from tg_bot_handlers import health
+from telegram.ext import ApplicationBuilder, CommandHandler, TypeHandler
+from tg_bot_handlers import filter_user_callback, health
 from tinydb import TinyDB
 from todoist_auth import access_token_loop, produce_state_str, token_exchange
 from todoist_notifs import process_event
@@ -119,6 +117,7 @@ async def main():
     )
 
     # start the bot
+    bot.add_handler(TypeHandler(Update, filter_user_callback), -1)
     bot.add_handler(CommandHandler("health", health))
     await bot.bot.set_webhook(
         url=f"{os.environ['URL']}/telegram/webhook", allowed_updates=Update.ALL_TYPES

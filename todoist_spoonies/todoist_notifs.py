@@ -44,10 +44,12 @@ class CompletedTaskRecord(BaseModel):
             return True
         return False
 
-    async def readd(self):
+    async def readd(self, delay=120):
         """
-        Readds the task to same project&section
+        Readds the task to same project&section.
+        Delay 120 secs to avoid confusing user in Todoist client UI.
         """
+        await asyncio.sleep(delay)
         async with ClientSession(headers=get_auth_headers()) as session:
             async with session.post(
                 url="https://api.todoist.com/api/v1/tasks",
@@ -115,9 +117,8 @@ async def process_completion(event_data: dict):
     logger.info(f"Task ID {task_record.id} inserted to DB")
 
     if task_record.should_readd():
-        # Delay 120 secs to avoid confusing user in Todoist client UI
-        await asyncio.sleep(120)
-        await task_record.readd()
+        asyncio.create_task(task_record.readd())
+        logger.info(f"Task ID {task_record.id} scheduled to be re-added")
 
 
 async def process_uncompletion(event_data: dict):
